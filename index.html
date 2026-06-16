@@ -158,6 +158,7 @@ canvas{display:block;width:100%;height:100%}
 <script type="module">
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.module.js';
 import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.161.0/examples/jsm/controls/PointerLockControls.js';
+import { createGuard, createCivilian, createDrone } from './js/characters.js';
 
 // ============================================================
 // SHOP DATA
@@ -594,34 +595,8 @@ class Enemy {
         this.state='patrol';
         this.patrolTarget=new THREE.Vector3(x+(Math.random()-0.5)*20, 1, z+(Math.random()-0.5)*20);
         this.alertTimer=0; this.viewRange=25;
-        this.mesh=this.createMesh(); this.mesh.position.set(x,1,z); scene.add(this.mesh);
-        this.hpBar=this.createHPBar(); this.mesh.add(this.hpBar);
-    }
-    createMesh() {
-        const g=new THREE.Group();
-        const body=new THREE.Mesh(new THREE.CylinderGeometry(0.35,0.4,1.2,8), new THREE.MeshStandardMaterial({color:0x222233,roughness:0.7}));
-        body.position.y=0.6; body.castShadow=true; g.add(body);
-        const head=new THREE.Mesh(new THREE.SphereGeometry(0.25,8,8), new THREE.MeshStandardMaterial({color:0x333344,roughness:0.5}));
-        head.position.y=1.45; head.castShadow=true; g.add(head);
-        this.visor=new THREE.Mesh(new THREE.BoxGeometry(0.35,0.1,0.15), new THREE.MeshStandardMaterial({color:0xff0000,emissive:0xff0000,emissiveIntensity:0.5}));
-        this.visor.position.set(0,1.45,0.15); g.add(this.visor);
-        const am=new THREE.MeshStandardMaterial({color:0x222233});
-        const la=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.7,6),am); la.position.set(-0.45,0.8,0); la.rotation.z=0.2; g.add(la);
-        const ra=new THREE.Mesh(new THREE.CylinderGeometry(0.08,0.08,0.7,6),am); ra.position.set(0.45,0.8,0); ra.rotation.z=-0.2; g.add(ra);
-        const lm=new THREE.MeshStandardMaterial({color:0x1a1a22});
-        const ll=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.6,6),lm); ll.position.set(-0.15,0.1,0); g.add(ll);
-        const rl=new THREE.Mesh(new THREE.CylinderGeometry(0.1,0.1,0.6,6),lm); rl.position.set(0.15,0.1,0); g.add(rl);
-        const gun=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.06,0.5), new THREE.MeshStandardMaterial({color:0x444444}));
-        gun.position.set(0.5,0.75,0.2); g.add(gun);
-        return g;
-    }
-    createHPBar() {
-        const g=new THREE.Group();
-        const bg=new THREE.Mesh(new THREE.PlaneGeometry(0.8,0.08), new THREE.MeshBasicMaterial({color:0x111111,side:THREE.DoubleSide}));
-        bg.position.y=1.8; g.add(bg);
-        this.hpBarFg=new THREE.Mesh(new THREE.PlaneGeometry(0.78,0.06), new THREE.MeshBasicMaterial({color:0x4caf50,side:THREE.DoubleSide}));
-        this.hpBarFg.position.set(0,1.8,0.001); g.add(this.hpBarFg);
-        return g;
+        this.mesh=createGuard('standard'); this.mesh.position.set(x,0,z); scene.add(this.mesh);
+        this.visor=this.mesh.visor; this.hpBar=this.mesh.hpBar; this.hpBarFg=this.mesh.hpBarFg;
     }
     update(dt) {
         if (this.dead) return;
